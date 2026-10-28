@@ -132,8 +132,3 @@ LOKA includes a command-line tool accessible from PowerShell, Windows Terminal, 
 | **PostgreSQL** | `5432` | `postgres` | `postgres` or *(empty)* |
 
 ---
-
-## License
-
-LOKA is open-source software licensed under the [MIT License](../LICENSE).  
-Copyright (c) 2026 LOKA Dev Team and Contributors.
