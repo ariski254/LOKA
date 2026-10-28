@@ -85,3 +85,18 @@ $RECYCLE.BIN/
 .env
 .env.*
 !.env.example
+
+### 10. AI Prompts & Scratch Files (Dikecualikan agar repo bersih)
+Agent.md
+Button.md
+Desain.md
+Diagnosa.md
+Fitur.md
+Fix.md
+Test.md
+UX.md
+Ui.md
+installasi.md
+desktop_screenshot.png
+*.prompt.md
+
