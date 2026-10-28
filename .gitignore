@@ -99,4 +99,9 @@ Ui.md
 installasi.md
 desktop_screenshot.png
 *.prompt.md
+*.bak
+*.stale*
+APP_README.md
+README_APP.md
+
 
