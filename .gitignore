@@ -30,6 +30,12 @@ Loka.Installer/Payload/*.zip
 *.exe.sha256
 checksums.txt
 
+### 3. Build & Automation Scripts (Dikecualikan agar skrip internal/build tidak di-upload)
+*.bat
+*.ps1
+*.cmd
+
+
 
 ### 3. Local Runtime & Test Directories (Sample/Testing lokal di luar source code)
 pgsql/
