@@ -76,7 +76,7 @@ Download the latest version from the [LOKA Releases Page](https://github.com/ari
 |---|---|---|
 | **`Loka-Setup-Online-x64.exe`** | **Most Users (Recommended)** | Lightweight (~1.8 MB) installer. Downloads and installs only the runtimes and components you choose. |
 | **`Loka-Setup-Offline-x64.exe`** | Offline / Air-Gapped Machines | Full installer (~870 MB) with all runtimes (Nginx, Apache, PHP 8.3-8.5, MySQL, MariaDB, Postgres) pre-packaged. |
-| **`Loka.exe`** | Portable Usage | Standalone single-file desktop application executable. |
+
 
 ### Installation Steps:
 1. Run `Loka-Setup-Online-x64.exe` (or the offline installer).

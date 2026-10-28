@@ -25,9 +25,11 @@ artifacts/*.tar.gz
 artifacts/*.7z
 artifacts/*.exe
 Loka.Installer/Payload/*.zip
+*.exe
 *.msi
 *.exe.sha256
 checksums.txt
+
 
 ### 3. Local Runtime & Test Directories (Sample/Testing lokal di luar source code)
 pgsql/
