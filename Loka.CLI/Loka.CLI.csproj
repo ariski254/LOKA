@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Loka.Core\Loka.Core.csproj" />
+    <ProjectReference Include="..\Loka.Infrastructure\Loka.Infrastructure.csproj" />
+    <ProjectReference Include="..\Loka.Runtime\Loka.Runtime.csproj" />
+    <ProjectReference Include="..\Loka.Project\Loka.Project.csproj" />
+    <ProjectReference Include="..\Loka.Database\Loka.Database.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>loka-cli</AssemblyName>
+  </PropertyGroup>
+
+</Project>

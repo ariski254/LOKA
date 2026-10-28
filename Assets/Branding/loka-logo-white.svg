@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" width="200" height="48" fill="none">
+  <!-- LOKA Brand Logo - Pure White (Transparent Background) -->
+  <g transform="translate(4, 6) scale(0.5625)">
+    <path d="M32 4 L6 30 L16 40 L32 24 L48 40 L58 30 Z" fill="#FFFFFF" />
+    <path d="M6 34 L32 60 L58 34 L48 24 L32 40 L16 24 Z" fill="#FFFFFF" fill-opacity="0.85" />
+    <polygon points="32,26 38,32 32,38 26,32" fill="#FFFFFF" />
+  </g>
+  
+  <text x="48" y="27" font-family="'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" letter-spacing="-0.3">LOKA</text>
+  <text x="49" y="38" font-family="'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="600" fill="#FFFFFF" fill-opacity="0.75" letter-spacing="0.8">DEVELOPMENT ENVIRONMENT</text>
+</svg>

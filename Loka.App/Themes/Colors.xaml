@@ -1,0 +1,173 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Official LOKA Design System Color Palette (Ui.md Section 2: White + Blue) -->
+    <!-- Base Canvas & Surfaces -->
+    <Color x:Key="AppBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="SurfaceSecondaryColor">#FAFAFA</Color>
+    <Color x:Key="TextPrimaryColor">#18181B</Color>
+    <Color x:Key="TextSecondaryColor">#71717A</Color>
+    <Color x:Key="TextMutedColor">#A1A1AA</Color>
+    <Color x:Key="BorderColor">#E4E4E7</Color>
+    <Color x:Key="BorderHoverColor">#CBD5E1</Color>
+    <Color x:Key="DividerColor">#F4F4F5</Color>
+    <Color x:Key="AccentColor">#2563EB</Color>
+    <Color x:Key="AccentHoverColor">#1D4ED8</Color>
+    <Color x:Key="AccentPressedColor">#1E40AF</Color>
+    <Color x:Key="AccentSubtleColor">#F0F6FF</Color>
+
+    <!-- Semantic Indicators (Green Success, Amber Warning, Red Danger, Blue Info) -->
+    <!-- Strict rule: No teal as decorative/primary color, no green buttons -->
+    <Color x:Key="SuccessColor">#16A34A</Color>
+    <Color x:Key="SuccessBgColor">#F0FDF4</Color>
+    <Color x:Key="SuccessBorderColor">#BBF7D0</Color>
+    <Color x:Key="SuccessTextColor">#15803D</Color>
+
+    <Color x:Key="WarningColor">#D97706</Color>
+    <Color x:Key="WarningBgColor">#FFFBEB</Color>
+    <Color x:Key="WarningBorderColor">#FDE68A</Color>
+    <Color x:Key="WarningTextColor">#92400E</Color>
+
+    <Color x:Key="ErrorColor">#DC2626</Color>
+    <Color x:Key="ErrorBgColor">#FEF2F2</Color>
+    <Color x:Key="ErrorBorderColor">#FECACA</Color>
+    <Color x:Key="ErrorTextColor">#991B1B</Color>
+
+    <Color x:Key="InfoColor">#0284C7</Color>
+    <Color x:Key="InfoBgColor">#F0F9FF</Color>
+    <Color x:Key="InfoBorderColor">#BAE6FD</Color>
+    <Color x:Key="InfoTextColor">#0369A1</Color>
+
+    <Color x:Key="DisabledColor">#A1A1AA</Color>
+    <Color x:Key="DisabledBgColor">#F4F4F5</Color>
+
+    <!-- Button Specific Tokens (Ui.md Section 2.C, 2.D, 2.E) -->
+    <!-- Primary Button: Royal Blue #2563EB, Text #FFFFFF -->
+    <Color x:Key="PrimaryButtonBgColor">#2563EB</Color>
+    <Color x:Key="PrimaryButtonHoverBgColor">#1D4ED8</Color>
+    <Color x:Key="PrimaryButtonPressedBgColor">#1E40AF</Color>
+    <Color x:Key="PrimaryButtonTextColor">#FFFFFF</Color>
+
+    <!-- Secondary Button: Background #FFFFFF, Border #E4E4E7, Text #18181B -->
+    <Color x:Key="ButtonSecondaryBgColor">#FFFFFF</Color>
+    <Color x:Key="ButtonSecondaryTextColor">#18181B</Color>
+    <Color x:Key="ButtonSecondaryBorderColor">#E4E4E7</Color>
+    <Color x:Key="ButtonSecondaryHoverBgColor">#F4F4F5</Color>
+    <Color x:Key="ButtonSecondaryPressedBgColor">#E4E4E7</Color>
+
+    <!-- Destructive Button: Background #FFFFFF, Border #E4E4E7, Text #DC2626, Hover #FEF2F2 -->
+    <Color x:Key="DestructiveButtonBgColor">#FFFFFF</Color>
+    <Color x:Key="DestructiveButtonTextColor">#DC2626</Color>
+    <Color x:Key="DestructiveButtonBorderColor">#E4E4E7</Color>
+    <Color x:Key="DestructiveButtonHoverBgColor">#FEF2F2</Color>
+    <Color x:Key="DestructiveButtonHoverBorderColor">#FECACA</Color>
+
+    <!-- Active Selection (Ui.md Section 2: Selected row/Active item #F0F6FF) -->
+    <Color x:Key="SelectionActiveBgColor">#F0F6FF</Color>
+    <Color x:Key="SelectionActiveBorderColor">#BFDBFE</Color>
+
+    <!-- Official SolidColorBrushes -->
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="SurfaceSecondaryBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="BorderHoverBrush" Color="{StaticResource BorderHoverColor}" />
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}" />
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+    <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource AccentSubtleColor}" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}" />
+    <SolidColorBrush x:Key="DisabledBrush" Color="{StaticResource DisabledColor}" />
+    <SolidColorBrush x:Key="DisabledBgBrush" Color="{StaticResource DisabledBgColor}" />
+
+    <!-- Button Brushes -->
+    <SolidColorBrush x:Key="PrimaryButtonBackgroundBrush" Color="{StaticResource PrimaryButtonBgColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonHoverBackgroundBrush" Color="{StaticResource PrimaryButtonHoverBgColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonPressedBackgroundBrush" Color="{StaticResource PrimaryButtonPressedBgColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonForegroundBrush" Color="{StaticResource PrimaryButtonTextColor}" />
+
+    <SolidColorBrush x:Key="ButtonSecondaryBackgroundBrush" Color="{StaticResource ButtonSecondaryBgColor}" />
+    <SolidColorBrush x:Key="ButtonSecondaryForegroundBrush" Color="{StaticResource ButtonSecondaryTextColor}" />
+    <SolidColorBrush x:Key="ButtonSecondaryBorderBrush" Color="{StaticResource ButtonSecondaryBorderColor}" />
+    <SolidColorBrush x:Key="ButtonSecondaryHoverBackgroundBrush" Color="{StaticResource ButtonSecondaryHoverBgColor}" />
+    <SolidColorBrush x:Key="ButtonSecondaryPressedBackgroundBrush" Color="{StaticResource ButtonSecondaryPressedBgColor}" />
+
+    <SolidColorBrush x:Key="DestructiveButtonBackgroundBrush" Color="{StaticResource DestructiveButtonBgColor}" />
+    <SolidColorBrush x:Key="DestructiveButtonForegroundBrush" Color="{StaticResource DestructiveButtonTextColor}" />
+    <SolidColorBrush x:Key="DestructiveButtonBorderBrush" Color="{StaticResource DestructiveButtonBorderColor}" />
+    <SolidColorBrush x:Key="DestructiveButtonHoverBackgroundBrush" Color="{StaticResource DestructiveButtonHoverBgColor}" />
+    <SolidColorBrush x:Key="DestructiveButtonHoverBorderBrush" Color="{StaticResource DestructiveButtonHoverBorderColor}" />
+
+    <!-- Backward-compatibility Aliases & Component Brushes -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
+    <SolidColorBrush x:Key="SubtleBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+    <SolidColorBrush x:Key="CardBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="Card BackgroundBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="CardHoverBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryButtonBgColor}" />
+    <SolidColorBrush x:Key="AccentLightBrush" Color="{StaticResource AccentSubtleColor}" />
+
+    <SolidColorBrush x:Key="SuccessBgBrush" Color="{StaticResource SuccessBgColor}" />
+    <SolidColorBrush x:Key="SuccessBorderBrush" Color="{StaticResource SuccessBorderColor}" />
+    <SolidColorBrush x:Key="SuccessTextBrush" Color="{StaticResource SuccessTextColor}" />
+
+    <SolidColorBrush x:Key="WarningBgBrush" Color="{StaticResource WarningBgColor}" />
+    <SolidColorBrush x:Key="WarningBorderBrush" Color="{StaticResource WarningBorderColor}" />
+    <SolidColorBrush x:Key="WarningTextBrush" Color="{StaticResource WarningTextColor}" />
+
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ErrorColor}" />
+    <SolidColorBrush x:Key="DangerBgBrush" Color="{StaticResource ErrorBgColor}" />
+    <SolidColorBrush x:Key="DangerBorderBrush" Color="{StaticResource ErrorBorderColor}" />
+    <SolidColorBrush x:Key="DangerTextBrush" Color="{StaticResource ErrorTextColor}" />
+
+    <SolidColorBrush x:Key="ErrorBgBrush" Color="{StaticResource ErrorBgColor}" />
+    <SolidColorBrush x:Key="ErrorBorderBrush" Color="{StaticResource ErrorBorderColor}" />
+    <SolidColorBrush x:Key="ErrorTextBrush" Color="{StaticResource ErrorTextColor}" />
+
+    <SolidColorBrush x:Key="InfoBgBrush" Color="{StaticResource InfoBgColor}" />
+    <SolidColorBrush x:Key="InfoBorderBrush" Color="{StaticResource InfoBorderColor}" />
+    <SolidColorBrush x:Key="InfoTextBrush" Color="{StaticResource InfoTextColor}" />
+
+    <SolidColorBrush x:Key="NeutralBrush" Color="{StaticResource DisabledColor}" />
+    <SolidColorBrush x:Key="NeutralBgBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+
+    <!-- Fluent UI Elevation, Popup & Selection Tokens -->
+    <Color x:Key="ShadowColor">#0F172A</Color>
+    <SolidColorBrush x:Key="ShadowBrush" Color="{StaticResource ShadowColor}" />
+    <SolidColorBrush x:Key="PopupBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="PopupBorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="ListItemHoverBrush" Color="#F4F4F5" />
+    <SolidColorBrush x:Key="ListItemSelectedBrush" Color="{StaticResource SelectionActiveBgColor}" />
+    <SolidColorBrush x:Key="ListItemSelectedBorderBrush" Color="{StaticResource SelectionActiveBorderColor}" />
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="#F4F4F5" />
+    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#F4F4F5" />
+
+    <!-- ToolTip Modern Tokens -->
+    <SolidColorBrush x:Key="ToolTipBackgroundBrush" Color="#18181B" />
+    <SolidColorBrush x:Key="ToolTipForegroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#3F3F46" />
+
+    <!-- DataGrid Modern Tokens -->
+    <SolidColorBrush x:Key="DataGridHeaderBackgroundBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+    <SolidColorBrush x:Key="DataGridRowHoverBrush" Color="#F4F4F5" />
+    <SolidColorBrush x:Key="DataGridRowSelectedBrush" Color="{StaticResource SelectionActiveBgColor}" />
+    <SolidColorBrush x:Key="DataGridGridLinesBrush" Color="{StaticResource BorderColor}" />
+
+    <!-- Terminal Surface Tokens (Ui.md Section 2: White canvas #FFFFFF, FAFAFA header, E4E4E7 border, 18181B text) -->
+    <SolidColorBrush x:Key="TerminalBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TerminalHeaderBackgroundBrush" Color="{StaticResource SurfaceSecondaryColor}" />
+    <SolidColorBrush x:Key="TerminalBorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="TerminalTextBrush" Color="{StaticResource TextPrimaryColor}" />
+    <SolidColorBrush x:Key="TerminalPromptBrush" Color="{StaticResource InfoColor}" />
+    <SolidColorBrush x:Key="TerminalSelectionBrush" Color="#BAE6FD" />
+
+</ResourceDictionary>

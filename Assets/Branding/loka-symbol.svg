@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- LOKA Geometric Developer Workspace Symbol ◈ (100% Transparent Background) -->
+  <!-- Top & Left Facet (Dark Navy #0F172A) -->
+  <path d="M32 4 L6 30 L16 40 L32 24 L48 40 L58 30 Z" fill="#0F172A" />
+  
+  <!-- Bottom & Right Facet (LOKA Blue #2563EB) -->
+  <path d="M6 34 L32 60 L58 34 L48 24 L32 40 L16 24 Z" fill="#2563EB" />
+  
+  <!-- Center Core Diamond Node (Sky Accent #38BDF8) -->
+  <polygon points="32,26 38,32 32,38 26,32" fill="#38BDF8" />
+</svg>

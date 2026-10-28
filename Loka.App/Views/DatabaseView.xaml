@@ -1,0 +1,279 @@
+<UserControl x:Class="Loka.App.Views.DatabaseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Loka.App.ViewModels"
+             xmlns:conv="clr-namespace:Loka.App.Converters"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:DatabaseViewModel}">
+
+    <UserControl.Resources>
+        <conv:UniversalBooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="18,14">
+
+            <!-- Top Header & Actions -->
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
+                    <TextBlock Text="Database" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                    <TextBlock Text="MySQL, MariaDB &amp; PostgreSQL — database browser and schema inspector" 
+                               FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBox Text="{Binding NewDatabaseName, UpdateSourceTrigger=PropertyChanged}" 
+                             Width="120" Height="26" Margin="0,0,6,0" VerticalContentAlignment="Center" 
+                             ToolTip="New database schema name" />
+                    <Button Content="+ Create" Style="{StaticResource PrimaryButton}" Command="{Binding CreateDatabaseCommand}" Height="26" Padding="12,0" FontSize="11.5" Margin="0,0,6,0" />
+                    <Button Content="⚡ Test Connection" Style="{StaticResource SecondaryButton}" Command="{Binding TestConnectionCommand}" Height="26" Padding="10,0" FontSize="11.5" Margin="0,0,6,0" ToolTip="Test connection to active database" />
+                    <Button Content="↻ Refresh" Style="{StaticResource SecondaryButton}" Command="{Binding LoadDatabasesCommand}" Height="26" Padding="10,0" FontSize="11.5" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Loading Indicator -->
+            <ProgressBar VerticalAlignment="Top" Height="2" IsIndeterminate="True" 
+                         Foreground="{StaticResource TextPrimaryBrush}" Background="Transparent" BorderThickness="0" Margin="0,0,0,8" 
+                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+            <!-- Connection Details Banner -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="14,10" Margin="0,0,0,12">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="ENGINE" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding SelectedEngine}" FontWeight="SemiBold" FontSize="12.5" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="HOST &amp; PORT" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding ConnectionEngineAndHost}" FontWeight="Medium" FontSize="12" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="USER" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding ConnectionUser}" FontWeight="Medium" FontSize="12" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="STATUS" Style="{StaticResource CaptionText}" />
+                            <TextBlock Text="{Binding ConnectionStatus}" FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" 
+                               Margin="0,8,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Two Columns Layout -->
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="230" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Panel: Clean Databases, Schemas & Tables Sidebar -->
+                <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="4" Padding="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="120" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Section: DATABASE SERVER DROPDOWN (Ui.md Section 1) -->
+                        <TextBlock Grid.Row="0" Text="DATABASE SERVER" FontWeight="SemiBold" FontSize="10.5" 
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="2,0,0,6" />
+
+                        <ComboBox Grid.Row="1" ItemsSource="{Binding DatabaseEngines}" SelectedItem="{Binding SelectedDatabaseEngine}"
+                                  DisplayMemberPath="DisplayName" Height="30" Margin="0,0,0,8" />
+
+                        <Border Grid.Row="2" Height="1" Background="{StaticResource BorderBrush}" Margin="0,4,0,8" />
+
+                        <!-- Section: SCHEMAS -->
+                        <TextBlock Grid.Row="3" Text="SCHEMAS" FontWeight="SemiBold" FontSize="10.5" 
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="2,0,0,4" />
+
+                        <Grid Grid.Row="4">
+                            <ListBox ItemsSource="{Binding Databases}" SelectedItem="{Binding SelectedDatabase}"
+                                     Background="Transparent" BorderThickness="0" Foreground="{StaticResource TextPrimaryBrush}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="1" Text="{Binding TablesCount, StringFormat='{}{0} tbls'}" 
+                                                       Foreground="{StaticResource TextMutedBrush}" FontSize="10.5" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <TextBlock Text="No databases connected or service stopped."
+                                       TextWrapping="Wrap" Foreground="{StaticResource TextMutedBrush}" FontSize="11"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Databases.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+
+                        <Border Grid.Row="5" Height="1" Background="{StaticResource BorderBrush}" Margin="0,8,0,8" />
+
+                        <!-- Section: TABLES IN SCHEMA -->
+                        <StackPanel Grid.Row="6" Margin="0,0,0,8">
+                            <TextBlock Text="TABLES" FontWeight="SemiBold" FontSize="10.5" 
+                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="2,0,0,4" />
+                            <ListBox ItemsSource="{Binding Tables}" Background="Transparent" BorderThickness="0"
+                                     MaxHeight="90" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Grid.Column="1" Text="{Binding RowsCount, StringFormat='{}{0} rows'}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+
+                        <!-- DB Actions -->
+                        <Grid Grid.Row="7">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Export" Style="{StaticResource SecondaryButton}" 
+                                    Command="{Binding ExportDatabaseCommand}" CommandParameter="{Binding SelectedDatabase}" 
+                                    Height="24" Padding="0" FontSize="11" Margin="0,0,3,0" />
+                            <Button Grid.Column="1" Content="Import" Style="{StaticResource SecondaryButton}" 
+                                    Command="{Binding ImportDatabaseCommand}" CommandParameter="{Binding SelectedDatabase}" 
+                                    Height="24" Padding="0" FontSize="11" Margin="0,0,3,0" />
+                            <Button Grid.Column="2" Content="Delete" Style="{StaticResource DangerButton}" 
+                                    Command="{Binding DropDatabaseCommand}" CommandParameter="{Binding SelectedDatabase}" 
+                                    Height="24" Padding="0" FontSize="11" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Right Panel: SQL Editor & Results -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- SQL Editor Surface -->
+                    <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" 
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="12">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Editor Header -->
+                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="SQL Query — " Style="{StaticResource CodeText}" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Text="{Binding SelectedDatabase.Name, TargetNullValue='No DB Selected'}" 
+                                               Style="{StaticResource CodeText}" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                                </StackPanel>
+
+                                <Button Content="▶ Run Query" Style="{StaticResource PrimaryButton}" 
+                                        Command="{Binding ExecuteQueryCommand}" HorizontalAlignment="Right" Height="24" Padding="12,0" FontSize="11.5" />
+                            </Grid>
+
+                            <!-- SQL Text Input Area: Uses CodeTextBox -->
+                            <TextBox Grid.Row="1" Text="{Binding SqlQuery, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource CodeTextBox}" AcceptsReturn="True" AcceptsTab="True" Height="75" Padding="8" />
+
+                            <!-- Query Stats Output -->
+                            <TextBlock Grid.Row="2" Text="{Binding QueryExecutionStats}" 
+                                       Style="{StaticResource CodeText}" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,0" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Separator Header -->
+                    <TextBlock Grid.Row="1" Text="QUERY RESULTS" FontWeight="SemiBold" FontSize="10.5" 
+                               Foreground="{StaticResource TextSecondaryBrush}" Margin="2,10,0,6" />
+
+                    <!-- Result DataGrid -->
+                    <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="4" Padding="0" MinHeight="160">
+                        <Grid>
+                            <DataGrid ItemsSource="{Binding QueryResultTable}"
+                                      AutoGenerateColumns="True"
+                                      CanUserAddRows="False"
+                                      IsReadOnly="True"
+                                      GridLinesVisibility="Horizontal"
+                                      HorizontalGridLinesBrush="{StaticResource BorderBrush}"
+                                      Background="{StaticResource SurfaceBrush}"
+                                      RowBackground="{StaticResource SurfaceBrush}"
+                                      AlternatingRowBackground="{StaticResource SurfaceSecondaryBrush}"
+                                      Foreground="{StaticResource TextPrimaryBrush}"
+                                      BorderThickness="0" />
+
+                            <TextBlock Text="Run an SQL query above to inspect live database records."
+                                       Foreground="{StaticResource TextMutedBrush}" FontSize="12"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding QueryResultTable}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,174 @@
+<UserControl x:Class="Loka.App.Views.PortsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Loka.App.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:PortsViewModel}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16,14">
+
+            <!-- Header -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="Domains &amp; Ports" Style="{StaticResource HeadingLarge}" />
+                    <TextBlock Text="Manage local development domains (.test) and inspect network port bindings" 
+                               Style="{StaticResource SubHeading}" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBox Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" Width="160" Height="26" Margin="0,0,6,0" VerticalContentAlignment="Center" />
+                    <Button Content="↻ Refresh Ports" Style="{StaticResource SecondaryButton}" 
+                            Command="{Binding RefreshPortsCommand}" Height="26" Padding="8,0" FontSize="11.5" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Loading Indicator -->
+            <ProgressBar Height="2" IsIndeterminate="True" Foreground="{StaticResource AccentBrush}" 
+                         Background="Transparent" BorderThickness="0" Margin="0,0,0,6" 
+                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+            <!-- Status Banner -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="10,5" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="STATUS:" FontWeight="SemiBold" FontSize="10" 
+                               Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" 
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11.5" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Ports Table Container -->
+            <Border Style="{StaticResource CardBorder}" Padding="0">
+                <StackPanel>
+                    <!-- Table Header Row -->
+                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="0,0,0,1" Padding="12,5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="65" />
+                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="85" />
+                                <ColumnDefinition Width="70" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="75" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="PORT" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="1" Text="SERVICE" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="2" Text="STATUS" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="3" Text="PID" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="4" Text="PROCESS NAME" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="5" Text="ACTION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Rows -->
+                    <ItemsControl ItemsSource="{Binding Ports}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,5" MinHeight="36">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="65" />
+                                            <ColumnDefinition Width="110" />
+                                            <ColumnDefinition Width="85" />
+                                            <ColumnDefinition Width="70" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="75" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Port -->
+                                        <TextBlock Grid.Column="0" Text="{Binding Port, StringFormat=':{0}'}" 
+                                                   Style="{StaticResource CodeText}" FontWeight="Medium" VerticalAlignment="Center" />
+
+                                        <!-- Service Tag -->
+                                        <TextBlock Grid.Column="1" Text="{Binding ServiceAssigned, TargetNullValue='Custom'}" 
+                                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+
+                                        <!-- Subtle Status Indicator (Ui.md Section 16: Dot only) -->
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock VerticalAlignment="Center" FontSize="9" Margin="0,0,6,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="○" />
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                                                                <Setter Property="Text" Value="●" />
+                                                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock FontSize="11.5" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="Free" />
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOccupied}" Value="True">
+                                                                <Setter Property="Text" Value="Occupied" />
+                                                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <!-- PID -->
+                                        <TextBlock Grid.Column="3" Text="{Binding ProcessId, StringFormat='PID {0}', TargetNullValue='-'}" 
+                                                   Style="{StaticResource CodeText}" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+
+                                        <!-- Process Name -->
+                                        <TextBlock Grid.Column="4" Text="{Binding ProcessName, TargetNullValue='-'}" 
+                                                   FontSize="12" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" 
+                                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding ProcessName}" />
+
+                                        <!-- Kill Action Button -->
+                                        <Button Grid.Column="5" Content="End Task" Style="{StaticResource DangerButton}"
+                                                Command="{Binding DataContext.KillProcessCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                IsEnabled="{Binding IsOccupied}"
+                                                Height="24" Padding="8,0" FontSize="11"
+                                                HorizontalAlignment="Right" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="No ports found matching current filter."
+                               Foreground="{StaticResource TextMutedBrush}" FontSize="12"
+                               HorizontalAlignment="Center" Margin="0,16">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Ports.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

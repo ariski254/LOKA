@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Loka.Core\Loka.Core.csproj" />
+    <ProjectReference Include="..\Loka.Infrastructure\Loka.Infrastructure.csproj" />
+    <ProjectReference Include="..\Loka.Runtime\Loka.Runtime.csproj" />
+    <ProjectReference Include="..\Loka.Project\Loka.Project.csproj" />
+    <ProjectReference Include="..\Loka.Database\Loka.Database.csproj" />
+    <ProjectReference Include="..\Loka.App\Loka.App.csproj" />
+    <ProjectReference Include="..\Loka.Installer\Loka.Installer.csproj" />
+  </ItemGroup>
+
+</Project>

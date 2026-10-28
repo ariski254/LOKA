@@ -1,0 +1,306 @@
+<UserControl x:Class="Loka.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Loka.App.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20,16">
+
+            <!-- Compact Header (Ui.md Section 20 & 26) -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="Settings" Style="{StaticResource HeadingLarge}" />
+                    <TextBlock Text="Environment configuration, runtimes, database, and system preferences" Style="{StaticResource SubHeading}" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="Save Changes" Style="{StaticResource PrimaryButton}" 
+                        Command="{Binding SaveSettingsCommand}" VerticalAlignment="Center" Height="28" Padding="14,0" FontSize="11.5" />
+            </Grid>
+
+            <!-- Status Message Bar -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,12">
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AccentBrush}" FontSize="11" FontWeight="Medium" TextWrapping="Wrap" />
+            </Border>
+
+            <!-- 1. Environment & Paths -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Environment &amp; Paths" Style="{StaticResource HeadingMedium}" Margin="0,0,0,8" />
+
+                    <!-- Environment Root -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Environment Root:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Browse..." Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding BrowseRootPathCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                    </Grid>
+
+                    <!-- Projects Path -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Projects Directory:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding ProjectsPath, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Browse..." Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding BrowseProjectsPathCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                    </Grid>
+
+                    <!-- Bin Path & Actions -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Internal Bin Path:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding BinPath, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Verify Directories" Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding ReinitializeDirectoriesCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                    </Grid>
+
+                    <CheckBox Content="Allow detection of external runtimes (XAMPP, Laragon, Program Files) as fallback" 
+                              IsChecked="{Binding AllowExternalRuntimes}" FontSize="11.5" Margin="0,2,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- 2. Stack & Runtimes -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Stack &amp; Runtimes" Style="{StaticResource HeadingMedium}" Margin="0,0,0,8" />
+
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- PHP Version -->
+                        <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                            <TextBlock Text="PHP Version" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <ComboBox ItemsSource="{Binding PhpVersionOptions}" SelectedItem="{Binding ActivePhpVersion}" Height="32" />
+                        </StackPanel>
+
+                        <!-- Web Server -->
+                        <StackPanel Grid.Column="1" Margin="2,0,2,0">
+                            <TextBlock Text="Web Server" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <ComboBox ItemsSource="{Binding WebServerOptions}" SelectedItem="{Binding PreferredWebServer}" Height="32" />
+                        </StackPanel>
+
+                        <!-- Database -->
+                        <StackPanel Grid.Column="2" Margin="2,0,2,0">
+                            <TextBlock Text="Database" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <ComboBox ItemsSource="{Binding DatabaseOptions}" SelectedItem="{Binding PreferredDatabase}" Height="32" />
+                        </StackPanel>
+
+                        <!-- Default Shell -->
+                        <StackPanel Grid.Column="3" Margin="4,0,0,0">
+                            <TextBlock Text="Terminal Shell" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <ComboBox ItemsSource="{Binding TerminalOptions}" SelectedItem="{Binding DefaultTerminal}" Height="32" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="{Binding ActivePhpBinary, StringFormat='Active PHP Binary: {0}'}" FontSize="11" 
+                               Foreground="{StaticResource TextMutedBrush}" FontFamily="Cascadia Code, Consolas" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Border>
+
+            <!-- 3. Service Ports & Autostart -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Service Ports &amp; Autostart" Style="{StaticResource HeadingMedium}" Margin="0,0,0,8" />
+
+                    <Grid Margin="0,0,0,8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Apache Port -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,4,8">
+                            <TextBlock Text="Apache Port" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding ApachePort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Apache SSL Port -->
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="2,0,2,8">
+                            <TextBlock Text="Apache SSL" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding ApacheSslPort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Nginx Port -->
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="4,0,0,8">
+                            <TextBlock Text="Nginx Port" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding NginxPort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- MySQL Port -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,4,0">
+                            <TextBlock Text="MySQL Port" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding MySqlPort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- MariaDB Port -->
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="2,0,2,0">
+                            <TextBlock Text="MariaDB Port" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding MariaDbPort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Postgres Port -->
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="4,0,0,0">
+                            <TextBlock Text="Postgres Port" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,3" />
+                            <TextBox Text="{Binding PostgresPort, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Auto-start toggles -->
+                    <WrapPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <CheckBox Content="Auto-start Apache" IsChecked="{Binding AutoStartApache}" FontSize="11.5" Margin="0,0,16,4" />
+                        <CheckBox Content="Auto-start Nginx" IsChecked="{Binding AutoStartNginx}" FontSize="11.5" Margin="0,0,16,4" />
+                        <CheckBox Content="Auto-start MySQL" IsChecked="{Binding AutoStartMySql}" FontSize="11.5" Margin="0,0,16,4" />
+                        <CheckBox Content="Auto-start MariaDB" IsChecked="{Binding AutoStartMariaDb}" FontSize="11.5" Margin="0,0,16,4" />
+                        <CheckBox Content="Auto-start PostgreSQL" IsChecked="{Binding AutoStartPostgres}" FontSize="11.5" Margin="0,0,16,4" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 4. Database Credentials & phpMyAdmin -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Database &amp; phpMyAdmin" Style="{StaticResource HeadingMedium}" Margin="0,0,0,8" />
+
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Host -->
+                        <TextBlock Grid.Column="0" Text="Database Host:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding DatabaseHost, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" Margin="0,0,8,0" />
+
+                        <!-- Root User -->
+                        <TextBlock Grid.Column="2" Text="Root User:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="3" Text="{Binding DatabaseRootUser, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                    </Grid>
+
+                    <!-- Root Password -->
+                    <Grid Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Root Password:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding DatabaseRootPassword, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Apply Password" Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding ApplyDatabasePasswordCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                        <Button Grid.Column="3" Content="Clear Password" Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding ClearDatabasePasswordCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                    </Grid>
+
+                    <!-- phpMyAdmin URL -->
+                    <Grid Margin="0,0,0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="130" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="phpMyAdmin URL:" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1" Text="{Binding PhpMyAdminUrl, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" />
+                        <Button Grid.Column="2" Content="Open in Browser ↗" Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding OpenPhpMyAdminInBrowserCommand}" Margin="4,0,0,0" Height="32" Padding="10,0" FontSize="11.5" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 5. Local SSL & HTTPS Root CA -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Local SSL &amp; HTTPS (Root CA)" Style="{StaticResource HeadingMedium}" Margin="0,0,0,4" />
+                    <TextBlock Text="Loka uses a local Root Certificate Authority (CA) so browsers (Chrome, Edge) automatically trust all local *.test domains without security warnings."
+                               FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Root CA Status: " FontSize="12" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding RootCaStatusText}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="Automatically issues and signs trusted SSL certificates for local .test development domains."
+                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Content="Install &amp; Trust Root CA"
+                                Command="{Binding TrustRootCertificateCommand}"
+                                Height="30" Padding="14,0" FontSize="11.5" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- 6. General & Maintenance -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10">
+                <StackPanel>
+                    <TextBlock Text="General &amp; Maintenance" Style="{StaticResource HeadingMedium}" Margin="0,0,0,8" />
+
+                    <CheckBox Content="Start Loka automatically when Windows boots" IsChecked="{Binding StartWithWindows}" 
+                              FontSize="11.5" Margin="0,0,0,6" />
+                    <CheckBox Content="Minimize application to system tray on close" IsChecked="{Binding MinimizeToTray}" 
+                              FontSize="11.5" Margin="0,0,0,6" />
+                    <CheckBox Content="Keep background services running when minimized" IsChecked="{Binding CloseToTray}" 
+                              FontSize="11.5" Margin="0,0,0,8" />
+
+                    <!-- Clear Logs Button -->
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <Button Content="Clear All Log Files" Style="{StaticResource SecondaryButton}" 
+                                Command="{Binding ClearLogsCommand}" Height="32" Padding="12,0" FontSize="11.5" Margin="0,0,12,0" />
+                        <TextBlock Text="{Binding LogsPath, StringFormat='Logs folder: {0}'}" FontSize="11" 
+                                   Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

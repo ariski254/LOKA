@@ -1,0 +1,87 @@
+## =====================================================================
+## .gitignore untuk Proyek Loka (Windows Web Development Environment)
+## =====================================================================
+
+### 1. Build & Compilation Outputs (Wajib di-ignore agar tidak mengotori repo)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+dist/
+dist-app/
+build/
+out/
+publish/
+*_wpftmp.*
+*.tmp
+
+
+### 2. Large Installer Binaries & Staging (PENTING: GitHub tolak file >100MB)
+release/
+artifacts/cache/
+artifacts/staging/
+artifacts/*.zip
+artifacts/*.tar.gz
+artifacts/*.7z
+artifacts/*.exe
+Loka.Installer/Payload/*.zip
+*.msi
+*.exe.sha256
+checksums.txt
+
+### 3. Local Runtime & Test Directories (Sample/Testing lokal di luar source code)
+pgsql/
+laravel/
+test-projects/
+temp/
+tmp/
+
+### 4. Visual Studio / IDE Files
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.ide/
+*.swp
+*~
+
+### 5. NuGet & Dependencies Cache
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/packages/
+
+### 6. Crash Dumps & Profiling
+*.stackdump
+*.dmp
+*.crash
+*.mdmp
+
+### 7. Certificates & Private Keys (Keamanan: jangan bocorkan sertifikat lokal)
+*.pfx
+*.p12
+*.key
+*.pem
+!Assets/**/*.ico
+!Assets/**/*.png
+!Assets/**/*.svg
+
+### 8. OS Generated Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+### 9. Environment & Secrets
+.env
+.env.*
+!.env.example

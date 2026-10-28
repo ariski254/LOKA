@@ -1,0 +1,281 @@
+<Window x:Class="Loka.App.Views.PatchManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Loka.App.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:PatchManagerViewModel}"
+        Title="LOKA - Patch Manager"
+        Icon="pack://application:,,,/Loka;component/Resources/loka.ico"
+        Height="560" Width="800"
+        MinHeight="500" MinWidth="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}"
+        FontFamily="Segoe UI, Arial, sans-serif"
+        FontSize="12"
+        Foreground="{StaticResource TextPrimaryBrush}"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Header -->
+            <RowDefinition Height="*" />    <!-- Content -->
+            <RowDefinition Height="Auto" /> <!-- Footer Actions -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="20,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="28" Height="28" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Image Source="pack://application:,,,/Loka;component/Resources/logo_24.png" RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="LOKA" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,8,0" />
+                            <TextBlock Text="Patch Manager" FontSize="16" FontWeight="Normal" Foreground="{StaticResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <TextBlock Text="Verify, download, and apply development stack updates" FontSize="11" Foreground="{StaticResource TextMutedBrush}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Current Version Badge -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="{StaticResource SubtleBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Installed: " FontSize="11" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                    <Button Style="{StaticResource SmallButton}" Command="{Binding CheckUpdatesCommand}" Content="Check Updates" IsEnabled="{Binding IsChecking, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}" ToolTip="Refresh update feed" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Body -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,16">
+            <StackPanel>
+
+                <!-- Status Banner -->
+                <Border CornerRadius="4" BorderThickness="1" Padding="14,10" Margin="0,0,0,16">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="{StaticResource SubtleBrush}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasError}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource ErrorBgBrush}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource ErrorBorderBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsInstalled}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource SuccessBgBrush}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource SuccessBorderBrush}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsUpdateAvailable}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource AccentLightBrush}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock Text="{Binding ErrorMessage}" FontSize="11.5" Foreground="{StaticResource DangerBrush}" Margin="0,3,0,0"
+                                       Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <!-- Checking Indicator -->
+                        <ProgressBar Grid.Column="1" Width="100" Height="4" IsIndeterminate="True"
+                                     Visibility="{Binding IsChecking, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Available Patch Card -->
+                <TextBlock Text="AVAILABLE UPDATES" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8" />
+
+                <!-- If Update Available -->
+                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,16" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <!-- Patch Header -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="{Binding SelectedPatch.Title}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,8,0" />
+                                    <Border Background="{StaticResource AccentLightBrush}" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1" CornerRadius="3" Padding="6,2">
+                                        <TextBlock Text="{Binding SelectedPatch.Version, StringFormat='v{0}'}" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Text="{Binding SelectedPatch.Description}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <!-- Size & Date -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                <TextBlock Text="{Binding SelectedPatch.FormattedSize, StringFormat='Size: {0}'}" FontSize="11.5" FontWeight="Medium" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" />
+                                <TextBlock Text="{Binding SelectedPatch.FormattedDate, StringFormat='Released: {0}'}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Separator Background="{StaticResource BorderBrush}" Margin="0,4,0,10" />
+
+                        <!-- Changelog List -->
+                        <TextBlock Text="Changelog Highlights:" FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
+                        <ItemsControl ItemsSource="{Binding SelectedPatch.Changelog}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <TextBlock Text="•" FontSize="12" Foreground="{StaticResource AccentBrush}" Margin="4,0,8,0" />
+                                        <TextBlock Text="{Binding}" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Download Progress Bar -->
+                        <StackPanel Margin="0,14,0,4" Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVis}}">
+                            <Grid Margin="0,0,0,4">
+                                <TextBlock Text="{Binding DownloadProgressText}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
+                                <TextBlock Text="{Binding DownloadSpeedText}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            </Grid>
+                            <ProgressBar Value="{Binding DownloadPercentage}" Height="6" Minimum="0" Maximum="100" />
+                        </StackPanel>
+
+                        <!-- Action Bar for Patch -->
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Verification Badge -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Integrity Check: " FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="SHA-256 Verified" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center"
+                                           Visibility="{Binding IsVerified, Converter={StaticResource BoolToVis}}" Margin="4,0,0,0" />
+                                <TextBlock Text="Pending Download" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"
+                                           Visibility="{Binding IsVerified, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}" Margin="4,0,0,0" />
+                            </StackPanel>
+
+                            <!-- Action Buttons -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <!-- Download Button -->
+                                <Button Style="{StaticResource SecondaryButton}" Content="Download Patch" Command="{Binding DownloadPatchCommand}"
+                                        Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}"
+                                        IsEnabled="{Binding IsDownloaded, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}" Margin="0,0,8,0" />
+
+                                <!-- Cancel Download Button -->
+                                <Button Style="{StaticResource SecondaryButton}" Content="Cancel" Command="{Binding CancelDownloadCommand}"
+                                        Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVis}}" Margin="0,0,8,0" />
+
+                                <!-- Install Button -->
+                                <Button Style="{StaticResource PrimaryButton}" Content="Install Patch" Command="{Binding InstallPatchCommand}"
+                                        IsEnabled="{Binding IsDownloaded}"
+                                        Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}" />
+
+                                <!-- Installed Badge -->
+                                <Border Background="{StaticResource SuccessBgBrush}" BorderBrush="{StaticResource SuccessBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="10,4"
+                                        Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="✓ Installed" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- If No Update Available -->
+                <Border Margin="0,0,0,16">
+                    <Border.Style>
+                        <Style TargetType="Border" BasedOn="{StaticResource CardBorder}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsUpdateAvailable}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel Orientation="Horizontal" Margin="6">
+                        <TextBlock Text="✓" FontSize="18" Foreground="{StaticResource SuccessBrush}" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="All stack runtimes, configurations, and scripts are up to date." FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock Text="No mandatory or optional patches are required at this time." FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Patch History Section -->
+                <TextBlock Text="PATCH HISTORY" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" Margin="0,10,0,8" />
+                <Border Style="{StaticResource CardBorder}">
+                    <Grid>
+                        <TextBlock Text="No previous patches installed on this environment." FontSize="11.5" Foreground="{StaticResource TextMutedBrush}" Margin="4"
+                                   Visibility="{Binding InstalledPatches.Count, Converter={StaticResource BoolToVis}, ConverterParameter=Inverse}" />
+
+                        <ItemsControl ItemsSource="{Binding InstalledPatches}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,6,0" />
+                                                    <TextBlock Text="{Binding Version, StringFormat='(v{0})'}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding FormattedDate}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer Actions -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="All changes are backed up automatically to C:\Loka\backups\patches\" FontSize="11" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+
+                <!-- Launch Button -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Style="{StaticResource PrimaryButton}" Height="32" Padding="16,0" FontSize="12.5"
+                            Content="Launch Application →"
+                            Command="{Binding LaunchApplicationCommand}"
+                            IsEnabled="{Binding IsLaunchAllowed}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

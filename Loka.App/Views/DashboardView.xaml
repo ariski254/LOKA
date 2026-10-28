@@ -1,0 +1,397 @@
+<UserControl x:Class="Loka.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Loka.App.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20,16">
+
+            <!-- Title & Environment (Ui.md Section 10, 11, 31) -->
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="Overview" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,3" />
+                    <TextBlock Text="{Binding EnvironmentPath, StringFormat='Environment: {0}'}"
+                               FontSize="11.5" FontFamily="Cascadia Code, Consolas" Foreground="{StaticResource TextSecondaryBrush}"
+                               TextTrimming="CharacterEllipsis" ToolTip="{Binding EnvironmentPath}" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="↻ Refresh" Style="{StaticResource SecondaryButton}"
+                        Command="{Binding RefreshCommand}"
+                        Height="26" Padding="10,0" FontSize="11.5" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Root CA Trust Alert Banner if untrusted (Desain.md Section 5.I & 6) -->
+            <Border Background="{StaticResource WarningBgBrush}" BorderBrush="{StaticResource WarningBorderBrush}" BorderThickness="1" CornerRadius="4" 
+                    Padding="14,10" Margin="0,0,0,16"
+                    Visibility="{Binding IsRootCaUntrusted, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="🔒 SSL Root CA Certificate Is Not Trusted in Windows"
+                                   FontWeight="SemiBold" FontSize="12.5" Foreground="{StaticResource WarningBrush}" />
+                        <TextBlock Text="Web browsers (Chrome / Edge) will display security warnings ('Your connection is not private') until you trust the Loka Root CA."
+                                   FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Button Grid.Column="1"
+                            Content="Trust Root CA Now"
+                            Command="{Binding TrustRootCertificateCommand}"
+                            Style="{StaticResource PrimaryButton}"
+                            Height="28" Padding="14,0" FontSize="11.5" VerticalAlignment="Center" Margin="12,0,0,0" />
+                </Grid>
+            </Border>
+
+            <!-- Web Servers (Apache, Nginx) -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="WEB SERVERS" FontSize="10.5" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4" />
+                    <ItemsControl ItemsSource="{Binding WebServers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="34">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="105" />
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Service Name -->
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13" FontWeight="Medium"
+                                               Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
+
+                                    <!-- Status Dot + Text -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock VerticalAlignment="Center" FontSize="9" Margin="0,0,6,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="○" />
+                                                    <Setter Property="Foreground" Value="{StaticResource NeutralBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                            <Setter Property="Text" Value="●" />
+                                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Starting">
+                                                            <Setter Property="Text" Value="◐" />
+                                                            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Stopping">
+                                                            <Setter Property="Text" Value="◑" />
+                                                            <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Error">
+                                                            <Setter Property="Text" Value="●" />
+                                                            <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding State}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- Port -->
+                                    <TextBlock Grid.Column="2" Text="{Binding Port, StringFormat=':{0}'}"
+                                               FontFamily="Cascadia Code, Consolas" FontSize="11.5"
+                                               Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+
+                                    <!-- Spacer Column -->
+                                    <TextBlock Grid.Column="3" Text="" />
+
+                                    <!-- Action Buttons -->
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Command="{Binding DataContext.ToggleServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="{Binding ActionText}"
+                                                IsEnabled="{Binding CanToggle}"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Height="24" Padding="10,0" FontSize="11.5" Margin="0,0,4,0" />
+                                        <Button Content="•••" Click="MoreOptions_Click"
+                                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Style="{StaticResource SecondaryButton}" Height="24" Width="26" Padding="0"
+                                                ToolTip="Service options (Restart, Config, Log)">
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="↻ Restart Service"
+                                                              Command="{Binding PlacementTarget.Tag.RestartServiceCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              IsEnabled="{Binding PlacementTarget.DataContext.CanRestart, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="⚙ Edit Configuration"
+                                                              Command="{Binding PlacementTarget.Tag.OpenConfigCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <MenuItem Header="📁 Open Config Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenConfigFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="📄 View Log File"
+                                                              Command="{Binding PlacementTarget.Tag.OpenLogsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <MenuItem Header="📂 Open Log Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenLogFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="💻 Open Service Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenServiceFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Database Servers (MySQL, MariaDB, PostgreSQL - Desain.md Section 2) -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="DATABASE SERVERS" FontSize="10.5" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4" />
+                    <ItemsControl ItemsSource="{Binding DatabaseServers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="34">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="105" />
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Server Name -->
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13" FontWeight="Medium"
+                                               Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" />
+
+                                    <!-- Status Dot + Text -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock VerticalAlignment="Center" FontSize="9" Margin="0,0,6,0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="○" />
+                                                    <Setter Property="Foreground" Value="{StaticResource NeutralBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                            <Setter Property="Text" Value="●" />
+                                                            <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Starting">
+                                                            <Setter Property="Text" Value="◐" />
+                                                            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Stopping">
+                                                            <Setter Property="Text" Value="◑" />
+                                                            <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding State}" Value="Error">
+                                                            <Setter Property="Text" Value="●" />
+                                                            <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding State}" FontSize="12" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- Port -->
+                                    <TextBlock Grid.Column="2" Text="{Binding Port, StringFormat=':{0}'}"
+                                               FontFamily="Cascadia Code, Consolas" FontSize="11.5"
+                                               Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+
+                                    <!-- Connection Indicator / Details -->
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="6,0,8,0">
+                                        <TextBlock Text="{Binding ConnectionStatus, StringFormat='[{0}]'}" FontSize="11"
+                                                   Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- Action Buttons -->
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Command="{Binding DataContext.ToggleServiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="{Binding ActionText}"
+                                                IsEnabled="{Binding CanToggle}"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Height="24" Padding="10,0" FontSize="11.5" Margin="0,0,4,0" />
+                                        <Button Content="•••" Click="MoreOptions_Click"
+                                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                Style="{StaticResource SecondaryButton}" Height="24" Width="26" Padding="0"
+                                                ToolTip="Service options (Restart, Config, Log)">
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="↻ Restart Service"
+                                                              Command="{Binding PlacementTarget.Tag.RestartServiceCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              IsEnabled="{Binding PlacementTarget.DataContext.CanRestart, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="⚙ Edit Configuration"
+                                                              Command="{Binding PlacementTarget.Tag.OpenConfigCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <MenuItem Header="📁 Open Config Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenConfigFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="📄 View Log File"
+                                                              Command="{Binding PlacementTarget.Tag.OpenLogsCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <MenuItem Header="📂 Open Log Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenLogFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Separator />
+                                                    <MenuItem Header="💻 Open Service Folder"
+                                                              Command="{Binding PlacementTarget.Tag.OpenServiceFolderCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                              CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Runtimes Line (Ui.md Section 10 & 31: PHP 8.4   Node 22  - WrapPanel so never cut off) -->
+            <WrapPanel Orientation="Horizontal" Margin="0,0,0,18">
+                <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,6">
+                    <TextBlock Text="{Binding ActivePhpSummary}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" />
+                </Border>
+                <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,6">
+                    <TextBlock Text="{Binding NodeSummary}" FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}" />
+                </Border>
+                <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,6">
+                    <TextBlock Text="{Binding ComposerSummary}" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}" />
+                </Border>
+                <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,6">
+                    <TextBlock Text="{Binding GitSummary}" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}" />
+                </Border>
+            </WrapPanel>
+
+            <!-- Primary Global Actions (Ui.md Section 9, 10, 31: [ Stop All ] [ phpMyAdmin ]) -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                <Button Content="{Binding GlobalActionText}"
+                        Command="{Binding ToggleAllServicesCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Height="28" Padding="14,0" FontSize="12" Margin="0,0,8,0" />
+
+                <Button Content="phpMyAdmin ↗" Style="{StaticResource SecondaryButton}"
+                        Command="{Binding NavigateToPhpMyAdminCommand}"
+                        Height="28" Padding="14,0" FontSize="12" />
+            </StackPanel>
+
+            <!-- Activity & Service Logs (Under phpMyAdmin button as requested) -->
+            <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,4,0,14">
+                <StackPanel>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Activity &amp; Service Logs" FontSize="12.5" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding RecentLogs.Count, StringFormat='({0} entries)'}" FontSize="11"
+                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Clear" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ClearLogsCommand}"
+                                Height="22" Padding="10,0" FontSize="11" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="4" Padding="4" Height="200">
+                        <ListBox ItemsSource="{Binding RecentLogs}" Background="Transparent" BorderThickness="0"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="4,2" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <ContentPresenter />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="2,1">
+                                        <TextBlock Text="{Binding Timestamp, StringFormat='[{0:HH:mm:ss}]'}"
+                                                   FontFamily="Cascadia Code, Consolas" FontSize="11"
+                                                   Foreground="{StaticResource TextMutedBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                        <Border CornerRadius="3" Padding="4,1" Margin="0,0,6,0" VerticalAlignment="Center">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{StaticResource NeutralBgBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Severity}" Value="Warning">
+                                                            <Setter Property="Background" Value="{StaticResource WarningBgBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Severity}" Value="Error">
+                                                            <Setter Property="Background" Value="{StaticResource DangerBgBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Source}"
+                                                       FontFamily="Cascadia Code, Consolas" FontSize="10.5" FontWeight="SemiBold">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Severity}" Value="Warning">
+                                                                <Setter Property="Foreground" Value="{StaticResource WarningBrush}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Severity}" Value="Error">
+                                                                <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                        <TextBlock Text="{Binding Message}"
+                                                   FontFamily="Cascadia Code, Consolas" FontSize="11"
+                                                   Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Subtle Status Line (Ui.md Section 1 - TextWrapping="Wrap" so never clipped) -->
+            <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap" />
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

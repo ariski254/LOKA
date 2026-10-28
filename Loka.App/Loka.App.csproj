@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\loka.ico</ApplicationIcon>
+    <AssemblyName>Loka</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\*.png" />
+    <Resource Include="Resources\*.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Loka.Core\Loka.Core.csproj" />
+    <ProjectReference Include="..\Loka.Infrastructure\Loka.Infrastructure.csproj" />
+    <ProjectReference Include="..\Loka.Runtime\Loka.Runtime.csproj" />
+    <ProjectReference Include="..\Loka.Project\Loka.Project.csproj" />
+    <ProjectReference Include="..\Loka.Database\Loka.Database.csproj" />
+    <ProjectReference Include="..\Loka.CLI\Loka.CLI.csproj" />
+  </ItemGroup>
+
+</Project>

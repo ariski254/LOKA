@@ -1,0 +1,266 @@
+<UserControl x:Class="Loka.App.Views.RuntimesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Loka.App.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=vm:RuntimesViewModel}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16,14">
+
+            <!-- Page Header -->
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="PHP &amp; Tools" Style="{StaticResource HeadingLarge}" />
+                    <TextBlock Text="Manage PHP versions and PHP extensions" 
+                               Style="{StaticResource SubHeading}" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Open php.ini" Style="{StaticResource SecondaryButton}" 
+                            Command="{Binding OpenPhpIniCommand}" Margin="0,0,6,0" Height="26" Padding="10,0" FontSize="11.5" />
+                    <Button Content="↻ Refresh" Style="{StaticResource SecondaryButton}" 
+                            Command="{Binding RefreshRuntimesCommand}" Height="26" Padding="8,0" FontSize="11.5" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Loading Indicator -->
+            <ProgressBar Height="2" IsIndeterminate="True" Foreground="{StaticResource AccentBrush}" 
+                         Background="Transparent" BorderThickness="0" Margin="0,0,0,6" 
+                         Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}" />
+
+            <!-- Status Indicator Bar -->
+            <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="10,5" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="STATUS:" FontWeight="SemiBold" FontSize="10" 
+                               Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1" Text="{Binding StatusMessage}" 
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="11.5" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- 1. PHP Manager (Agent.md Section 4.A & Section 12.E) -->
+            <TextBlock Text="1. PHP MANAGER (VERSIONS &amp; CONFIGURATION)" FontWeight="SemiBold" FontSize="10" 
+                       Foreground="{StaticResource TextMutedBrush}" Margin="2,0,0,6" />
+
+            <Border Style="{StaticResource CardBorder}" Padding="0" Margin="0,0,0,14">
+                <StackPanel>
+                    <!-- Active PHP Details Banner -->
+                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="0,0,0,1" Padding="12,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Active PHP Binary" Style="{StaticResource HeadingMedium}" />
+                                <TextBlock Text="{Binding ActivePhpBinary, TargetNullValue='No active PHP binary selected'}" 
+                                           Style="{StaticResource CodeText}" Foreground="{StaticResource AccentBrush}" Margin="0,2,0,0" />
+                                <TextBlock Text="{Binding PhpCliVersion}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <Border Background="{StaticResource SuccessBgBrush}" BorderBrush="{StaticResource SuccessBrush}" 
+                                        BorderThickness="1" CornerRadius="3" Padding="8,3">
+                                    <TextBlock Text="{Binding SelectedPhpVersion, StringFormat='Active: PHP {0}'}" 
+                                               FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Header -->
+                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="0,0,0,1" Padding="12,5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="95" />
+                                <ColumnDefinition Width="105" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="85" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="VERSION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="1" Text="STATUS" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="2" Text="RUNTIME DETAILS" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="3" Text="ACTION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Version Items -->
+                    <ItemsControl ItemsSource="{Binding PhpVersions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,6" MinHeight="38">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="95" />
+                                            <ColumnDefinition Width="105" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="85" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Version Name -->
+                                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="12.5" VerticalAlignment="Center" />
+
+                                        <!-- Status Badge -->
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock VerticalAlignment="Center" FontSize="9" Margin="0,0,6,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="○" />
+                                                        <Setter Property="Foreground" Value="{StaticResource NeutralBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                <Setter Property="Text" Value="●" />
+                                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                            </DataTrigger>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding IsActive}" Value="False" />
+                                                                    <Condition Binding="{Binding IsInstalled}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Text" Value="●" />
+                                                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                            </MultiDataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Status}" FontSize="11.5" FontWeight="Medium" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                            </DataTrigger>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding IsActive}" Value="False" />
+                                                                    <Condition Binding="{Binding IsInstalled}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                            </MultiDataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <!-- Details & Path -->
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,8,0">
+                                            <TextBlock Text="{Binding ReleaseInfo}" FontSize="11.5" Foreground="{StaticResource TextPrimaryBrush}" />
+                                            <TextBlock Text="{Binding BinaryPath}" Style="{StaticResource CaptionText}" TextTrimming="CharacterEllipsis" ToolTip="{Binding BinaryPath}" Margin="0,1,0,0" />
+                                        </StackPanel>
+
+                                        <!-- Action Button -->
+                                        <Button Grid.Column="3" Content="Activate" Style="{StaticResource SecondaryButton}" 
+                                                Command="{Binding DataContext.SetActivePhpVersionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding Version}"
+                                                IsEnabled="{Binding CanActivate}"
+                                                Visibility="{Binding CanActivate, Converter={StaticResource BoolToVis}}"
+                                                Height="24" Padding="10,0" FontSize="11" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- 2. PHP Extensions (Agent.md Section 4.B & Section 12.E) -->
+            <TextBlock Text="2. PHP EXTENSIONS" FontWeight="SemiBold" FontSize="10" 
+                       Foreground="{StaticResource TextMutedBrush}" Margin="2,0,0,6" />
+
+            <Border Style="{StaticResource CardBorder}" Padding="0" Margin="0,0,0,10">
+                <StackPanel>
+                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="0,0,0,1" Padding="12,5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="70" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="EXTENSION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="1" Text="DESCRIPTION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="2" Text="STATUS" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" />
+                            <TextBlock Grid.Column="3" Text="ACTION" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding Extensions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,5" MinHeight="32">
+                                    <Grid VerticalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="70" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource CodeText}" FontWeight="Medium" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Description}" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock VerticalAlignment="Center" FontSize="9" Margin="0,0,6,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="○" />
+                                                        <Setter Property="Foreground" Value="{StaticResource NeutralBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                                <Setter Property="Text" Value="●" />
+                                                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding StatusText}" FontSize="11.5" VerticalAlignment="Center">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+
+                                        <Button Grid.Column="3" 
+                                                Command="{Binding DataContext.ToggleExtensionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="{Binding ActionText}"
+                                                IsEnabled="{Binding CanToggle}"
+                                                Style="{StaticResource SecondaryButton}"
+                                                Height="22" Padding="8,0" FontSize="10.5" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
