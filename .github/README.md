@@ -131,4 +131,3 @@ LOKA includes a command-line tool accessible from PowerShell, Windows Terminal, 
 | **MariaDB** | `3307` | `root` | *(empty)* |
 | **PostgreSQL** | `5432` | `postgres` | `postgres` or *(empty)* |
 
----
